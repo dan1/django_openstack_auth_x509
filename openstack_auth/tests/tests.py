@@ -915,6 +915,25 @@ class OpenStackAuthTestsWebSSO(OpenStackAuthTestsMixin, test.TestCase):
         self.assertRedirects(response, redirect_url, status_code=302,
                              target_status_code=404)
 
+    def test_websso_redirect_using_websso_keystone_url(self):
+        settings.WEBSSO_KEYSTONE_URL = 'http://keystone-public:5000/v3'
+        origin = 'http://testserver/auth/websso/'
+        protocol = 'oidc'
+        redirect_url = ('%s/auth/OS-FEDERATION/identity_providers/%s'
+                        '/protocols/%s/websso?origin=%s' %
+                        (settings.WEBSSO_KEYSTONE_URL, self.idp_id,
+                         protocol, origin))
+
+        form_data = {'auth_type': self.idp_oidc_id,
+                     'region': settings.OPENSTACK_KEYSTONE_URL}
+        url = reverse('login')
+
+        # POST to the page and redirect to keystone.
+        response = self.client.post(url, form_data)
+        # verify that the request was sent back to WEBSSO_KEYSTONE_URL
+        self.assertRedirects(response, redirect_url, status_code=302,
+                             target_status_code=404)
+
     def test_websso_login(self):
         projects = [self.data.project_one, self.data.project_two]
         unscoped = self.data.federated_unscoped_access_info
