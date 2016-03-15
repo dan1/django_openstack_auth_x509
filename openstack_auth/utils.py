@@ -159,7 +159,7 @@ def build_absolute_uri(request, relative_url):
     return request.build_absolute_uri(webroot + relative_url)
 
 
-def _get_websso_url(request, auth_url, websso_auth):
+def get_websso_url(request, auth_url, websso_auth):
     """Return the keystone endpoint for initiating WebSSO.
 
     Generate the keystone WebSSO endpoint that will redirect the user
@@ -230,18 +230,6 @@ def _get_websso_url(request, auth_url, websso_auth):
         url = ('%s/auth/OS-FEDERATION/websso/%s?origin=%s' %
                (auth_url, protocol_id, origin))
 
-    return url
-
-
-def _get_x509_url(request, auth_url, x509_auth):
-    raise NotImplementedError()
-
-
-def get_sso_url_for_auth_type(request, auth_url, auth_type):
-    if auth_type == 'x509':
-        url = _get_x509_url(request, auth_url, auth_type)
-    else:
-        url = _get_websso_url(request, auth_url, auth_type)
     return url
 
 
